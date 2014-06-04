@@ -43,8 +43,8 @@ class Reader
       return cb(err) if err?
       @decompressed-buffer-read = 0
       cb!
-  _read-compressed-frame: (length, cb) ->
-    # TODO
+  _read-uncompressed-frame: (length, cb) ->
+    cb! #TODO
 
   _read-crc: (cb) ->
     err, bytes-read, buffer <~ fs.read(@file, new Buffer(4), 0, 4, null)
@@ -53,7 +53,6 @@ class Reader
     | bytes-read < 4 => cb(new Error("Expected to read 4 bytes, but read #bytes-read"))
     | otherwise      => 
       crc = read-crc(buffer)
-      console.log "frame-crc: #crc"
 
       cb null, crc
 
@@ -67,8 +66,6 @@ class Reader
     | otherwise      => 
       type   = read-chunk-id buffer
       length = read-chunk-length buffer
-      console.log "frame-type: #type"
-      console.log "frame-length: #length"
       cb null, type, length
 
   _read-next-frame: (cb) ->
