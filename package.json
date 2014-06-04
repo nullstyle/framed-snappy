@@ -1,0 +1,43 @@
+{
+  "name": "framed-snappy",
+  "description": "Decode files compressed using the framed-snappy format",
+  "version": "0.0.1",
+  "homepage": "https://github.com/nullstyle/framed-snappy",
+  "bugs": "https://github.com/nullstyle/framed-snappy/issues",
+  "license": "MIT",
+  "main": "lib",
+  "author": {
+    "name": "Scott Fleckenstein",
+    "email": "nullstyle@gmail.com",
+    "url": "https://github.com/nullstyle"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nullstyle/framed-snappy"
+  },
+  "keywords": [],
+  "dependencies": {
+    "debug": "0.8.1",
+    "prelude-ls": "~1.1.1",
+    "snappy": "~2.1.3",
+    "buffer-crc32": "~0.2.1",
+    "fs-ext": "~0.3.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "gulp-bump": "^0.1.8",
+    "gulp-jshint": "^1.5.5",
+    "gulp-mocha": "^0.4.1",
+    "coveralls": "^2.10.0",
+    "should": "^3.3.1",
+    "jshint-stylish": "^0.2.0",
+    "gulp-load-plugins": "^0.5.1",
+    "gulp-livescript": "~0.3.0",
+    "gulp-spawn-mocha": "~0.1.4",
+    "mocha": "~1.20.0"
+  },
+  "scripts": {
+    "coveralls": "gulp test && cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test": "gulp test"
+  }
+}
