@@ -15,7 +15,7 @@ gulp.task 'build', ->
 gulp.task 'mocha', ['build'] ->
   gulp
     .src  paths.tests, cwd: __dirname
-    .pipe plugins.spawn-mocha(reporter: 'list', compilers:"ls:livescript")
+    .pipe plugins.mocha(reporter: 'list')
 
 
 gulp.task 'bump', ['test'], ->
