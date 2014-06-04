@@ -44,7 +44,14 @@ class Reader
       @decompressed-buffer-read = 0
       cb!
   _read-uncompressed-frame: (length, cb) ->
-    cb! #TODO
+    err, bytes-read, buffer <~ fs.read(@file, new Buffer(length), 0, length, null)
+    switch
+    | err?                => cb(err)
+    | bytes-read < length => cb(new Error("Expected to read #length bytes, but read #bytes-read"))
+    | otherwise           =>
+      @decompressed-buffer = buffer
+      @decompressed-buffer-read = 0
+      cb!
 
   _read-crc: (cb) ->
     err, bytes-read, buffer <~ fs.read(@file, new Buffer(4), 0, 4, null)
@@ -79,6 +86,15 @@ class Reader
       err, crc <~ @_read-crc 
       return cb(err) if err?
       err <~ @_read-compressed-frame length
+      return cb(err) if err?
+      # err <~ @_validate-crc(crc)
+      # return cb(err) if err?
+      cb null, false
+    | type == FRAME_IDS["uncompressedData"] =>
+      length -= CRC32_SIZE
+      err, crc <~ @_read-crc 
+      return cb(err) if err?
+      err <~ @_read-uncompressed-frame length
       return cb(err) if err?
       # err <~ @_validate-crc(crc)
       # return cb(err) if err?

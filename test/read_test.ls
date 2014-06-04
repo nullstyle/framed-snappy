@@ -21,6 +21,12 @@ it 'can read a whole file', (next) ->
   next!
 
 
+it 'can read a file with uncompressed blocks', (next) ->
+  err, file <- framed-snappy.open(__dirname + "/fixtures/doggy.gif.sz", 'r')
+  err, bytes-read, buffer <- framed-snappy.read(file, new Buffer(863692), 0, 863692)
+  bytes-read.should.equal 863692
+  next!
+
 it 'can read across frames', (next) ->
   err, file <- framed-snappy.open(__dirname + "/fixtures/lorem-2frame.txt.sz", 'r')
   err, bytes-read, buffer <- framed-snappy.read(file, new Buffer(1000), 0, 1000)
