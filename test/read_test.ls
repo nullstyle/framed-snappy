@@ -47,3 +47,14 @@ it "reads exactly the right number of bytes", (next) ->
   err, bytes-read, buffer <- framed-snappy.read(file, new Buffer(1), 0, 1)
   bytes-read.should.equal 0
   next!
+
+it "errors when a crc is incorrect", (next) ->
+  err, file <- framed-snappy.open(__dirname + "/fixtures/lorem-corrupt.txt.sz", 'r')
+  err, bytes-read, buffer <- framed-snappy.read(file, new Buffer(5), 0, 5)
+
+  should(err).be.an.instanceOf(Error)
+
+  next!
+
+
+

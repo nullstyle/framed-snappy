@@ -14,5 +14,5 @@ export masked-crc-for-buffer = (input) ->
   result.writeUInt32BE(buffer-crc32c, 0)
   masked-crc result
 
-export buffer-valid = (crc, input) -> 
-  buffer.eq(crc, masked-crc-for-buffer(input))
+export buffer-valid = (crc, input) ->
+  buffer.eq(crc, 0, masked-crc-for-buffer(input), 0, 4)

@@ -50,10 +50,10 @@ Handle<Value> MaskedCrc(const Arguments& args) {
   uint32_t masked = ((unmasked >> 15) | (unmasked << 17)) + 0xa282ead8;
 
   // to array from uint32_t
-  result_data[0] = (masked >> 24) & 0xff;
-  result_data[1] = (masked >> 16) & 0xff;
-  result_data[2] = (masked >> 8)  & 0xff;
-  result_data[3] = (masked >> 0)  & 0xff;
+  result_data[3] = (masked >> 24) & 0xff;
+  result_data[2] = (masked >> 16) & 0xff;
+  result_data[1] = (masked >> 8)  & 0xff;
+  result_data[0] = (masked >> 0)  & 0xff;
 
   return scope.Close(Undefined());
 }
