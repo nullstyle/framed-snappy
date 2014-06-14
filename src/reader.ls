@@ -1,5 +1,7 @@
 require! snappy
 require! fs: "fs-ext"
+require! "./util/crc"
+
 {eq:buffer-eq} = require("./util/buffer")
 
 FRAME_HEADER_SIZE  = 4
@@ -21,10 +23,6 @@ read-chunk-id = (input) ->
 
 read-chunk-length = (input) ->
   input[1] .|. input[2] .<<. 8 .|. input[3] .<<. 16
-
-read-crc = (input) ->
-  input[4] .|. input[5] .<<. 8 .|. input[6] .<<. 16 .|. input[7] .<<. 24
-
 
 
 
@@ -59,9 +57,14 @@ class Reader
     | err?           => cb(err)
     | bytes-read < 4 => cb(new Error("Expected to read 4 bytes, but read #bytes-read"))
     | otherwise      => 
-      crc = read-crc(buffer)
+      @decompressed-crc = buffer
+      cb!
 
-      cb null, crc
+  _validate-crc: (cb) ->
+    if crc.buffer-valid(@decompressed-crc, @decompressed-buffer)
+      cb!
+    else
+      cb(new Error("Invalid CRC in frame"))
 
   _read-header: (cb) ->
     err, bytes-read, buffer <~ fs.read(@file, new Buffer(4), 0, 4, null)
@@ -83,21 +86,21 @@ class Reader
       cb null, true
     | type == FRAME_IDS["compressedData"] =>
       length -= CRC32_SIZE
-      err, crc <~ @_read-crc 
+      err <~ @_read-crc 
       return cb(err) if err?
       err <~ @_read-compressed-frame length
       return cb(err) if err?
-      # err <~ @_validate-crc(crc)
-      # return cb(err) if err?
+      err <~ @_validate-crc
+      return cb(err) if err?
       cb null, false
     | type == FRAME_IDS["uncompressedData"] =>
       length -= CRC32_SIZE
-      err, crc <~ @_read-crc 
+      err <~ @_read-crc 
       return cb(err) if err?
       err <~ @_read-uncompressed-frame length
       return cb(err) if err?
-      # err <~ @_validate-crc(crc)
-      # return cb(err) if err?
+      err <~ @_validate-crc
+      return cb(err) if err?
       cb null, false
     | otherwise =>
       # skip the frame by advancing the file
