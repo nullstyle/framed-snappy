@@ -1,7 +1,7 @@
 {
   "name": "framed-snappy",
   "description": "Decode files compressed using the framed-snappy format",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/nullstyle/framed-snappy",
   "bugs": "https://github.com/nullstyle/framed-snappy/issues",
   "license": "MIT",
