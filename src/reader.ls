@@ -4,19 +4,7 @@ require! "./util/crc"
 
 {eq:buffer-eq} = require("./util/buffer")
 
-FRAME_HEADER_SIZE  = 4
-CRC32_SIZE         = 4
-TARGET_FRAME_SIZE  = 5 * 1024 * 1024 # 5MB
-USEABLE_FRAME_SIZE = TARGET_FRAME_SIZE - FRAME_HEADER_SIZE
-
-STREAM_IDENTIFIER          = new Buffer([0xff, 0x06, 0x00, 0x00, 0x73, 0x4e, 0x61, 0x50, 0x70, 0x59])
-
-FRAME_IDS = 
-  stream-id:         0xff
-  compressed-data:   0x00
-  uncompressed-data: 0x01
-  padding:           0xfe
-
+{CRC32_SIZE, FRAME_IDS, STREAM_IDENTIFIER} = require("./common")
 
 read-chunk-id = (input) ->
   type = input[0]

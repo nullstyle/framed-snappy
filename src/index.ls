@@ -27,8 +27,11 @@ export open = (path, mode, cb) ->
 
   switch
     | w && r => return cb(new Error("No support for reading and writing from some fd"))
-    | w      => 
+    | w      =>
       result = new Writer(file)
+      err <- result.write-stream-id!
+      return cb(err) if err?
+      cb(null, result)
     | r      => 
       result = new Reader(file)
       err <- result.read-stream-id!
