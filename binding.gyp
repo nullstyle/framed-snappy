@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "masked_crc",
-      "sources": [ "src/util/masked_crc.cc" ]
+      "target_name": "native",
+      "sources": [ "src/native.cc" ]
     }
   ]
 }

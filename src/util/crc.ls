@@ -1,7 +1,7 @@
 require! "./buffer"
 require! crc32c:"fast-crc32c"
 {inspect} = require "util"
-{native-masked-crc} = require "../../build/Release/masked_crc"
+{native-masked-crc} = require "../../build/Release/native"
 
 export masked-crc = (crc) ->
   result  = new Buffer(4)

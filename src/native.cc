@@ -7,6 +7,7 @@
 
 using namespace v8;
 
+
 Handle<Value> MaskedCrc(const Arguments& args) {
   HandleScope scope;
 
@@ -20,7 +21,7 @@ Handle<Value> MaskedCrc(const Arguments& args) {
     return scope.Close(Undefined());
   }
 
-  if(!node::Buffer::HasInstance(args[0])) {
+  if(!node::Buffer::HasInstance(args[1])) {
     ThrowException(Exception::TypeError(String::New("Second argument isn't buffer")));
     return scope.Close(Undefined());
   }
@@ -62,4 +63,4 @@ void init(Handle<Object> exports) {
   exports->Set(String::NewSymbol("nativeMaskedCrc"), FunctionTemplate::New(MaskedCrc)->GetFunction());
 }
 
-NODE_MODULE(masked_crc, init)
+NODE_MODULE(native, init)
