@@ -7,8 +7,7 @@ require! fs
 {CRC32_SIZE, FRAME_IDS, STREAM_IDENTIFIER} = require("./common")
 FRAME_HEADER_SIZE  = 4
 
-TARGET_FRAME_SIZE  = 5 * 1024 * 1024 # 5MB
-USEABLE_FRAME_SIZE = TARGET_FRAME_SIZE - FRAME_HEADER_SIZE
+TARGET_FRAME_SIZE  = 1 * 1024 * 1024 # 1MB
 
 write-stream-id = (file, cb) ->
   err, bytes-written, buffer <- fs.write file, STREAM_IDENTIFIER, 0, STREAM_IDENTIFIER.length, null
@@ -38,6 +37,11 @@ write-compressed-chunk = (output, crc, compressed-data) ->
   write-crc          output, crc
   write-chunk-data   output, compressed-data
 
+write-uncompressed-chunk = (output, crc, uncompressed-data) ->
+  write-chunk-id     output, "uncompressedData" 
+  write-chunk-length output, CRC32_SIZE + uncompressed-data.length
+  write-crc          output, crc
+  write-chunk-data   output, uncompressed-data
 
 class Writer
   (@file) ->
@@ -61,12 +65,19 @@ class Writer
     err, compressed-data <~ snappy.compress to-write
     return cb(err) if err?
 
-    output-buffer-size = FRAME_HEADER_SIZE + CRC32_SIZE + compressed-data.length
-    to-write = new Buffer(output-buffer-size)
 
-    write-compressed-chunk to-write, crc, compressed-data 
-    
-    err, bytes-written, buffer <~ fs.write @file, to-write, 0, output-buffer-size, null
+    size-savings = 1.0 - ( compressed-data.length / to-write.length )
+
+    if size-savings > 0.1
+      output-buffer-size = FRAME_HEADER_SIZE + CRC32_SIZE + compressed-data.length
+      output-buffer = new Buffer(output-buffer-size)
+      write-compressed-chunk output-buffer, crc, compressed-data 
+    else
+      output-buffer-size = FRAME_HEADER_SIZE + CRC32_SIZE + to-write.length
+      output-buffer = new Buffer(output-buffer-size)
+      write-uncompressed-chunk output-buffer, crc, to-write
+
+    err, bytes-written, buffer <~ fs.write @file, output-buffer, 0, output-buffer-size, null
     return cb(err) if err?
 
     if bytes-written < output-buffer-size
