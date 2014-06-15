@@ -19,7 +19,7 @@ write-chunk-id = (output, type) ->
 
 write-chunk-length = (output, length) ->
   get-octet = (octet, num) ->
-    to-shift = num * 8
+    to-shift = octet * 8
     num .>>. to-shift .&. 0xff
 
   output[1] = get-octet(0, length)
